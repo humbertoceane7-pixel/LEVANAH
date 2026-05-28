@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Étape secrète...</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: #0a0a0f;
+  color: #f0e8d8;
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle var(--d) ease-in-out infinite alternate;
+  opacity: var(--o);
+}
+@keyframes twinkle { to { opacity: 0.1; transform: scale(0.4); } }
+
+/* Écrans */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  z-index: 1;
+  text-align: center;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.screen.out {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-30px);
+}
+.screen.hidden {
+  display: none;
+}
+
+/* Typo */
+.eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #7a6f62;
+  margin-bottom: 1.2rem;
+}
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.9rem, 5vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.2;
+  color: #f0e8d8;
+  margin-bottom: 1rem;
+}
+h1 em { font-style: italic; color: #c9a96e; }
+.sub {
+  font-size: 1rem;
+  color: #8a7d6e;
+  line-height: 1.65;
+  max-width: 400px;
+  margin-bottom: 2.5rem;
+}
+
+/* Bouton principal */
+.btn {
+  padding: 0.9rem 2.8rem;
+  border: 1px solid #c9a96e;
+  border-radius: 4px;
+  color: #c9a96e;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+}
+.btn:hover { background: #c9a96e20; }
+.btn:active { transform: scale(0.97); }
+
+/* Séparateur */
+.line {
+  width: 50px; height: 1px;
+  background: #c9a96e40;
+  margin: 1.8rem auto;
+}
+
+/* Icônes emoji grands */
+.icon { font-size: 3.2rem; margin-bottom: 1.2rem; }
+
+/* Animations d'entrée */
+.fade-in { animation: fadeUp 0.7s forwards; opacity: 0; }
+.fade-in:nth-child(1) { animation-delay: 0.1s; }
+.fade-in:nth-child(2) { animation-delay: 0.3s; }
+.fade-in:nth-child(3) { animation-delay: 0.5s; }
+.fade-in:nth-child(4) { animation-delay: 0.7s; }
+.fade-in:nth-child(5) { animation-delay: 0.9s; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+/* Boutons OUI / NON */
+.btns-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn-oui {
+  padding: 1rem 3rem;
+  background: #c9a96e;
+  color: #0a0a0f;
+  border: none;
+  border-radius: 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-oui:hover { background: #e8c87a; transform: scale(1.04); }
+.btn-oui:active { transform: scale(0.97); }
+
+.btn-non {
+  padding: 1rem 2rem;
+  border: 1px solid #2e2a25;
+  color: #4a4540;
+  background: transparent;
+  border-radius: 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+}
+
+/* Confettis */
+canvas#confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99;
+}
+
+/* Écran final — message indice */
+.indice-box {
+  background: #141410;
+  border: 1px solid #2e2a1e;
+  border-radius: 8px;
+  padding: 1.4rem 2rem;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #8a7d6e;
+  max-width: 380px;
+  line-height: 1.6;
+}
+.indice-box strong { color: #c9a96e; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<canvas id="confetti"></canvas>
+
+<!-- ÉCRAN 1 : Intro mystérieuse -->
+<div class="screen" id="s1">
+  <div class="icon fade-in">🗝️</div>
+  <p class="eyebrow fade-in">Étape secrète</p>
+  <h1 class="fade-in">Tu as trouvé.<br>Bien joué, Leva.</h1>
+  <p class="sub fade-in">Mais avant de recevoir la suite… il y a quelque chose qu'Océ voulait te dire.</p>
+  <button class="btn fade-in" id="btnContinuer">Continuer →</button>
+</div>
+
+<!-- ÉCRAN 2 : Le promposal -->
+<div class="screen hidden" id="s2">
+  <div class="icon fade-in">💛</div>
+  <h1 class="fade-in">Prom ?<br>Avec <em>toi</em> ?</h1>
+  <p class="sub fade-in">Voilà. C'est dit. La question la plus importante de ce jeu de piste.</p>
+  <div class="btns-row fade-in">
+    <button class="btn-oui" id="btnOui">OUI 🎉</button>
+    <button class="btn-non" id="btnNon">Non... (sérieux ?)</button>
+  </div>
+</div>
+
+<!-- ÉCRAN 3 : Réponse OUI + indice -->
+<div class="screen hidden" id="s3">
+  <div class="icon fade-in">🥂</div>
+  <h1 class="fade-in">Excellent choix.</h1>
+  <div class="line"></div>
+  <p class="sub fade-in" style="margin-bottom:1.2rem">Maintenant tu mérites la suite du jeu de piste.<br>Océ t'envoie le prochain indice par message.</p>
+  <div class="indice-box fade-in">
+    <strong>À surveiller :</strong> ton téléphone 📱<br>
+    Le message arrive dans quelques secondes.
+  </div>
+</div>
+
+<script>
+// Étoiles
+const starsEl = document.getElementById('stars');
+for(let i=0;i<130;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const size=Math.random()>0.85?3:2;
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;--d:${2+Math.random()*5}s;--o:${0.2+Math.random()*0.7};animation-delay:${Math.random()*5}s`;
+  starsEl.appendChild(s);
+}
+
+// Transition entre écrans
+function goTo(from, to){
+  const a=document.getElementById(from);
+  const b=document.getElementById(to);
+  a.classList.add('out');
+  setTimeout(()=>{
+    a.classList.add('hidden');
+    a.classList.remove('out');
+    b.classList.remove('hidden');
+    // Réinitialise les animations
+    b.querySelectorAll('.fade-in').forEach(el=>{
+      el.style.animation='none';
+      el.offsetHeight;
+      el.style.animation='';
+    });
+  }, 700);
+}
+
+// Écran 1 → 2
+document.getElementById('btnContinuer').addEventListener('click', ()=> goTo('s1','s2'));
+
+// Écran 2 → 3 (OUI)
+document.getElementById('btnOui').addEventListener('click', ()=>{
+  goTo('s2','s3');
+  launchConfetti();
+});
+
+// Bouton NON qui s'échappe
+const btnNon = document.getElementById('btnNon');
+let nonMoves = 0;
+function escape(e){
+  if(nonMoves > 6) return; // après 6 esquives, il disparaît
+  nonMoves++;
+  const rect = btnNon.getBoundingClientRect();
+  const cx = rect.left + rect.width/2;
+  const cy = rect.top + rect.height/2;
+  const mx = e.clientX || cx + 50;
+  const my = e.clientY || cy + 50;
+  const dx = mx - cx;
+  const dy = my - cy;
+  const dist = Math.sqrt(dx*dx+dy*dy)||1;
+  let nx = -(dx/dist)*140;
+  let ny = -(dy/dist)*140;
+  // Garder dans la fenêtre
+  const newL = rect.left+nx, newT = rect.top+ny;
+  if(newL<10) nx=10-rect.left;
+  if(newT<10) ny=10-rect.top;
+  if(newL+rect.width>window.innerWidth-10) nx=window.innerWidth-10-rect.right;
+  if(newT+rect.height>window.innerHeight-10) ny=window.innerHeight-10-rect.bottom;
+  btnNon.style.transform=`translate(${nx}px,${ny}px)`;
+  if(nonMoves>6) btnNon.style.opacity='0';
+}
+btnNon.addEventListener('mousemove', escape);
+btnNon.addEventListener('click', escape);
+btnNon.addEventListener('touchstart', e=>{ escape(e.touches[0]); e.preventDefault(); });
+
+// Confettis
+function launchConfetti(){
+  const canvas=document.getElementById('confetti');
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+  const cols=['#c9a96e','#e8c87a','#f0e8d8','#ffd700','#fff0a0','#d4a853'];
+  const ps=[];
+  for(let i=0;i<200;i++) ps.push({
+    x:Math.random()*canvas.width, y:-10-Math.random()*300,
+    r:3+Math.random()*6, vy:1.5+Math.random()*3,
+    vx:(Math.random()-.5)*2,
+    tilt:0, ts:0.04+Math.random()*0.08,
+    color:cols[Math.floor(Math.random()*cols.length)],
+    shape:Math.random()>.5?'rect':'circle'
+  });
+  let f=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    f++;
+    ps.forEach(p=>{
+      p.y+=p.vy; p.x+=p.vx; p.tilt+=p.ts;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.tilt);
+      ctx.fillStyle=p.color;
+      ctx.globalAlpha=Math.max(0, 1-(f-200)/100);
+      if(p.shape==='rect') ctx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);
+      else { ctx.beginPath(); ctx.arc(0,0,p.r/2,0,Math.PI*2); ctx.fill(); }
+      ctx.restore();
+    });
+    if(f<350) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+</script>
+</body>
+</html>
